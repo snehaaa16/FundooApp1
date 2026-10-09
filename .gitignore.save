@@ -1,0 +1,36 @@
+# globs
+
+Makefile.in
+
+*.userprefs
+
+*.usertasks
+
+config.make
+
+config.status
+
+aclocal.m4
+
+install-sh
+
+autom4te.cache/
+
+*.tar.gz
+
+tarballs/
+
+test-results/
+
+
+# Mac bundle stuff
+
+*.dmg
+
+*.app
+
+
+# content below from: https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
+
+# General
+
