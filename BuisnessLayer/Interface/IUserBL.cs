@@ -6,8 +6,8 @@ namespace BuisnessLayer.Interface
 {
 	public interface IUserBL
 	{
-        public RegistrationModel RegisterUserBL(RegistrationModel registrationModel);
-        public UserResponseModel LoginUserBL(LoginModel model);
+        public Task<RegistrationModel> RegisterUserBL(RegistrationModel registrationModel);
+        public Task<UserResponseModel> LoginUserBL(LoginModel model);
     }
 }
 

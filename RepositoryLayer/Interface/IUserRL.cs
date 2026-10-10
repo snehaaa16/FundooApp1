@@ -6,7 +6,7 @@ namespace RepositoryLayer.Interface
 {
 	public interface IUserRL
 	{
-        public RegistrationModel RegisterUserRL(RegistrationModel registrationModel);
-        public UserResponseModel LoginUser(LoginModel loginuser);
+        public Task<RegistrationModel> RegisterUserRL(RegistrationModel registrationModel);
+        public Task<UserResponseModel> LoginUser(LoginModel loginuser);
     }
 }

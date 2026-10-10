@@ -24,9 +24,9 @@ public class FundooController : ControllerBase
 
     [HttpPost]
     [Route("register")]
-    public ResponseModel<RegistrationModel> RegisterUser(RegistrationModel registrationModel)
+    public async Task<ResponseModel<RegistrationModel>> RegisterUser(RegistrationModel registrationModel)
     {
-        RegistrationModel response= _userBL.RegisterUserBL(registrationModel);
+        RegistrationModel response= await _userBL.RegisterUserBL(registrationModel);
         ResponseModel<RegistrationModel> model = new ResponseModel<RegistrationModel>();
         model.Data = response;
         model.Success = true;
@@ -36,9 +36,9 @@ public class FundooController : ControllerBase
 
     [HttpPost]
     [Route("login")]
-    public IActionResult Login(LoginModel model)
+    public async Task<IActionResult> Login(LoginModel model)
     {
-        var result = _userBL.LoginUserBL(model);
+        var result = await _userBL.LoginUserBL(model);
         var response = new ResponseModel<UserResponseModel>();
 
         if (result == null)
@@ -56,7 +56,7 @@ public class FundooController : ControllerBase
 
     [Authorize]
     [HttpGet("profile")]
-    public IActionResult Profile()
+    public async Task<IActionResult> Profile()
     {
         string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         string? email = User.FindFirst(ClaimTypes.Email)?.Value;

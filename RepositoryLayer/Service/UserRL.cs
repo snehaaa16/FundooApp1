@@ -5,6 +5,7 @@ using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interface;
 using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
 
 namespace RepositoryLayer.Service
 {
@@ -28,7 +29,7 @@ namespace RepositoryLayer.Service
             return response;
         }
 
-        public RegistrationModel RegisterUserRL(RegistrationModel registrationModel)
+        public async Task<RegistrationModel> RegisterUserRL(RegistrationModel registrationModel)
         {
             UserEntity userEntity = new UserEntity();
             userEntity.FirstName = registrationModel.FirstName;
@@ -38,17 +39,17 @@ namespace RepositoryLayer.Service
             userEntity.Password = hashPass;
             userEntity.PhoneNumber = registrationModel.ContactNo;
 
-            fundooContext.Users.Add(userEntity);
+            await fundooContext.Users.AddAsync(userEntity);
 
-            fundooContext.SaveChanges();
+            await fundooContext.SaveChangesAsync();
 
             return registrationModel;
         }
 
-        public UserResponseModel LoginUser(LoginModel loginuser)
+        public async Task<UserResponseModel> LoginUser(LoginModel loginuser)
         {
             string email = loginuser.Email;
-            UserEntity? user = fundooContext.Users.FirstOrDefault(e => e.Email == email);
+            UserEntity? user = await fundooContext.Users.FirstOrDefaultAsync(e => e.Email == email);
             if (user == null) return null;
 
             bool isValid = BCrypt.Net.BCrypt.Verify(loginuser.Password, user.Password);

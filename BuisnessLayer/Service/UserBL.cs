@@ -16,14 +16,14 @@ namespace BuisnessLayer.Service
             this._jwtService = _jwtService;
         }
 
-        public RegistrationModel RegisterUserBL(RegistrationModel registrationModel)
+        public async Task<RegistrationModel> RegisterUserBL(RegistrationModel registrationModel)
         {
-            return _userRL.RegisterUserRL(registrationModel);
+            return await _userRL.RegisterUserRL(registrationModel);
         }
 
-        public UserResponseModel LoginUserBL(LoginModel loginUser)
+        public async Task<UserResponseModel> LoginUserBL(LoginModel loginUser)
         {
-            var user = _userRL.LoginUser(loginUser);
+            var user = await _userRL.LoginUser(loginUser);
             if (user == null) return null;
             user.Token = _jwtService.GenerateToken(user);
             return user;
