@@ -12,14 +12,10 @@ namespace Fundoo1.Controllers;
 public class FundooController : ControllerBase
 {
     private IUserBL _userBL;
-    private IForgotPasswordBL _forgotPasswordBL;
-    private IResetPasswordBL _resetPasswordBL;
 
-    public FundooController(IUserBL _userBL, IForgotPasswordBL _forgotPasswordBL, IResetPasswordBL _resetPasswordBL)
+    public FundooController(IUserBL _userBL)
     {
         this._userBL = _userBL;
-        this._forgotPasswordBL = _forgotPasswordBL;
-        this._resetPasswordBL = _resetPasswordBL;
     }
 
     [HttpPost]
@@ -68,7 +64,7 @@ public class FundooController : ControllerBase
     [HttpPost("ForgotPassword")]
     public async Task<IActionResult> ForgotPasswordAsync(ForgotPasswordRequestModel req)
     {
-        var res = await _forgotPasswordBL.ForgotPasswordAsyncBL(req);
+        var res = await _userBL.ForgotPasswordAsyncBL(req);
 
         return Ok(res);
     }
@@ -77,7 +73,7 @@ public class FundooController : ControllerBase
     [Route("ResetPassword")]
     public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequestModel req)
     {
-        var res = await _resetPasswordBL.ResetPasswordAsyncBL(req);
+        var res = await _userBL.ResetPasswordAsyncBL(req);
         if (res.Success)
         {
             return Ok(res);

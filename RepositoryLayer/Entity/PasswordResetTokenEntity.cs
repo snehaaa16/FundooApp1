@@ -8,9 +8,9 @@ namespace RepositoryLayer.Entity
         [Key]
         public int Id { get; set; }
         [Required]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
         [Required]
-        public string Token { get; set; }
+        public string Token { get; set; } = string.Empty;
         [Required]
         public DateTime ExpiryTime { get; set; }
         [Required]

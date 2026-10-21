@@ -8,6 +8,9 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Middleware.Service.JwtService;
+using ModelLayer.Models;
+using Middleware.Service.EmailService;
 
 namespace Fundoo1;
 
@@ -20,26 +23,23 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
+
+        builder.Services.Configure<SmtpSettings>(
+        builder.Configuration.GetSection("SmtpSettings"));
+
+        builder.Services.AddScoped<IEmailService, EmailService>();
+
         builder.Services.AddScoped<IUserBL, UserBL>();
         builder.Services.AddScoped<IUserRL, UserRL>();
 
-        builder.Services.AddScoped<IJwtService,JwtService>();
+        builder.Services.AddScoped<IJwtService, JwtService>();
 
-        builder.Services.AddScoped<IForgotPasswordBL, ForgotPasswordBL>();
-        builder.Services.AddScoped<IForgotPasswordRL, ForgotPasswordRL>();
-
-        builder.Services.AddScoped<IResetPasswordRL, ResetPasswordRL>();
-        builder.Services.AddScoped<IResetPasswordBL, ResetPasswordBL>();
+        builder.Services.AddScoped<INotesBL, NotesBL>();
+        builder.Services.AddScoped<INotesRL, NotesRL>();
 
         builder.Services.AddDbContext<FundooContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("FundooConnection"))
         );
-
-        builder.Services.AddHttpClient<IEmailClient, EmailClient>(client =>
-        {
-            client.BaseAddress = new Uri("http://localhost:5118/");
-        });
-
 
         builder.Services.AddCors(options =>
         {

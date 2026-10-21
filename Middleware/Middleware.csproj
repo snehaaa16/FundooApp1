@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ExceptionHandler\" />
+    <None Remove="Service\" />
+    <None Remove="Service\JwtService\" />
+    <None Remove="Service\EmailService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ExceptionHandler\" />
+    <Folder Include="Service\" />
+    <Folder Include="Service\JwtService\" />
+    <Folder Include="Service\EmailService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.7.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ModelLayer\ModelLayer.csproj" />
+  </ItemGroup>
+</Project>

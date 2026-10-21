@@ -8,6 +8,9 @@ namespace BuisnessLayer.Interface
 	{
         public Task<RegistrationModel> RegisterUserBL(RegistrationModel registrationModel);
         public Task<UserResponseModel> LoginUserBL(LoginModel model);
+        public Task<ForgotPasswordResponseModel> ForgotPasswordAsyncBL(ForgotPasswordRequestModel req);
+        public PasswordResetTokenModel GenerateToken(string email);
+        public Task<ResetPasswordResponseModel> ResetPasswordAsyncBL(ResetPasswordRequestModel req);
     }
 }
 

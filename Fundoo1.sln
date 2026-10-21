@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingModelLayer", "Mess
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingBuisnessLayer", "MessagingBuisnessLayer\MessagingBuisnessLayer.csproj", "{4B3B6F80-E16E-4EE4-AD1E-45DD439BA5E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Middleware", "Middleware\Middleware.csproj", "{57071D37-05AA-493F-AFB3-2557278016A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{4B3B6F80-E16E-4EE4-AD1E-45DD439BA5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B3B6F80-E16E-4EE4-AD1E-45DD439BA5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B3B6F80-E16E-4EE4-AD1E-45DD439BA5E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57071D37-05AA-493F-AFB3-2557278016A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57071D37-05AA-493F-AFB3-2557278016A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57071D37-05AA-493F-AFB3-2557278016A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57071D37-05AA-493F-AFB3-2557278016A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
