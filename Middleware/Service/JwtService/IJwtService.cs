@@ -7,6 +7,9 @@ namespace Middleware.Service.JwtService
 	{
         string GenerateToken(UserResponseModel user);
 
+        string GeneratePasswordResetToken(string email);
+
+        string? ValidatePasswordResetToken(string token);
+
     }
 }
-

@@ -10,7 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Middleware.Service.JwtService;
 using ModelLayer.Models;
+using MediatR;
 using Middleware.Service.EmailService;
+using BuisnessLayer.Users.Command;
 
 namespace Fundoo1;
 
@@ -26,6 +28,14 @@ public class Program
 
         builder.Services.Configure<SmtpSettings>(
         builder.Configuration.GetSection("SmtpSettings"));
+
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = "localhost:6379";
+            options.InstanceName = "Fundoo:";
+        });
+
+        builder.Services.AddMediatR(cfg =>cfg.RegisterServicesFromAssembly(typeof(CreateUserHandler).Assembly));
 
         builder.Services.AddScoped<IEmailService, EmailService>();
 

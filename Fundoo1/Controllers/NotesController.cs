@@ -1,207 +1,179 @@
 ﻿using System.Security.Claims;
-using BuisnessLayer.Interface;
+using BuisnessLayer.Notes.Command;
+using BuisnessLayer.Notes.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using ModelLayer.Models;
 using RepositoryLayer.Entity;
 
-namespace Fundoo1.Controllers
+namespace Fundoo1.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class NotesController : ControllerBase
 {
-	[ApiController]
-	[Route("api/[controller]")]
-	[Authorize]
-	public class NotesController: ControllerBase
+    private readonly ISender _sender;
+    private const string UserIdClaim = "user_id";
+
+    public NotesController(ISender sender)
     {
-		private const string UserIdClaim = "user_id";
-        private INotesBL _notesBL;
-        public NotesController(INotesBL _notesBL)
+        _sender = sender;
+    }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateNote(NoteCreationModel note)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var entity = await _sender.Send(new CreateNoteCommand(note, userId));
+
+        return Ok(new ResponseModel<NoteEntity>
         {
-			this._notesBL = _notesBL;
-        }
+            Success = true,
+            Message = "Note created successfully",
+            Data = entity
+        });
+    }
 
-		[HttpPost]
-		[Route("create")]
-		public async Task<IActionResult> CreateNote(NoteCreationModel note)
-		{
-			if(!TryGetUserId(out var UserId))
-			{
-				return Unauthorized();
-			}
+    [HttpPost("ViewNotById")]
+    public async Task<IActionResult> ViewNoteById(NotesIdModel notesId)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
 
-			NoteModel noteModel = new NoteModel();
-			noteModel.Colour = note.Colour;
-			noteModel.Description = note.Description;
-			noteModel.Title = note.Title;
-			noteModel.UserId = UserId;
+        var note = await _sender.Send(new GetNoteByIdQuery(notesId, userId));
 
-			var entity = await _notesBL.AddNoteBL(noteModel);
-			if (entity == null)
-			{
-				return BadRequest(new ResponseModel<NoteEntity>
-				{
-					Success = false,
-					Message = "Saving Note to Database Failed"
-				});
-			}
-			return Ok(new ResponseModel<NoteEntity>
-			{
-				Success = true,
-				Message = "Note created successfully",
-				Data = entity
-			});
-        }
-
-        [HttpPost]
-        [Route("ViewNotById")]
-		public async Task<IActionResult> ViewNoteById(NotesIdModel _notesId)
-		{
-            if (!TryGetUserId(out var UserId))
-            {
-                return Unauthorized();
-            }
-
-            var note = await _notesBL.FindNoteByIdBL(_notesId, UserId);
-
-            if(note==null) return NotFound(new ResponseModel<NoteEntity>
+        if (note == null)
+            return NotFound(new ResponseModel<NoteEntity>
             {
                 Success = false,
                 Message = "Note not Found"
             });
 
-            return Ok(new ResponseModel<NoteEntity>
-            {
-                Success = true,
-                Message="Note Found",
-                Data=note
-            }) ;
-        }
-
-        [HttpPost]
-        [Route("ViewAllNotes")]
-        public async Task<IActionResult> ViewAllNotes()
+        return Ok(new ResponseModel<NoteEntity>
         {
-            if (!TryGetUserId(out var UserId))
-            {
-                return Unauthorized();
-            }
+            Success = true,
+            Message = "Note Found",
+            Data = note
+        });
+    }
 
-            var notes = await _notesBL.ViewAllNotesBL(UserId);
-            return Ok(new ResponseModel<List<NoteEntity>>
-            {
-                Success=true,
-                Message="Notes Found",
-                Data=notes
-            });
-        }
+    [HttpPost("ViewAllNotes")]
+    public async Task<IActionResult> ViewAllNotes()
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
 
-        [HttpPost]
-        [Route("editNote")]
-        public async Task<IActionResult> EditNote(EditNoteModel editNoteModel)
+        var notes = await _sender.Send(new GetAllNotesQuery(userId));
+
+        return Ok(new ResponseModel<List<NoteEntity>>
         {
-            if (!TryGetUserId(out var UserId))
-            {
-                return Unauthorized();
-            }
+            Success = true,
+            Message = "Notes Found",
+            Data = notes
+        });
+    }
 
-            var editedNote = await _notesBL.EditNoteBL(editNoteModel, UserId);
+    [HttpPost("editNote")]
+    public async Task<IActionResult> EditNote(EditNoteModel editNoteModel)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
 
-            if(editedNote==null) return BadRequest(new ResponseModel<NoteEntity>
+        var editedNote = await _sender.Send(
+            new EditNoteCommand(editNoteModel, userId));
+
+        if (editedNote == null)
+            return NotFound(new ResponseModel<NoteEntity>
             {
                 Success = false,
-                Message = "note not found",
+                Message = "Note not found"
             });
 
-            return Ok(new ResponseModel<NoteEntity>
-            {
-                Success=true,
-                Message="note updated successfully",
-                Data=editedNote
-            });
-        }
-
-        [HttpPost]
-		[Route("delete")]
-		public async Task<IActionResult> DeleteNote(NotesIdModel _notesId)
-		{
-            if (!TryGetUserId(out var UserId))
-            {
-                return Unauthorized();
-            }
-
-			var deletedNote = await _notesBL.DeleteNoteBL(_notesId, UserId);
-
-			if (deletedNote == null) return NotFound(new ResponseModel<NoteEntity>
-			{
-				Success=false,
-				Message="Note not Found"
-			});
-
-            return Ok(new ResponseModel<NoteEntity>
-            {
-                Success = true,
-                Message = "Note Deleted",
-				Data=deletedNote
-            });
-        }
-
-        [HttpPost]
-        [Route("archive")]
-        public async Task<IActionResult> ArchUnarchNote(NotesIdModel _notesId)
-		{
-            if (!TryGetUserId(out var UserId))
-            {
-                return Unauthorized();
-            }
-
-			int affectedRows = await _notesBL.ArchUnarchNoteBL(_notesId, UserId);
-
-			if (affectedRows == 0) return NotFound(new ResponseModel<NotesIdModel>
-			{
-				Success = false,
-				Message="Note not found",
-				Data= _notesId
-            }) ;
-
-            return Ok(new ResponseModel<NotesIdModel>
-            {
-                Success = true,
-                Message = "Note Archived/Unarchived",
-                Data = _notesId
-            });
-        }
-
-        [HttpPost]
-        [Route("trashing")]
-        public async Task<IActionResult> TrashUnTrash(NotesIdModel _notesId)
+        return Ok(new ResponseModel<NoteEntity>
         {
-            if (!TryGetUserId(out var UserId))
+            Success = true,
+            Message = "Note updated successfully",
+            Data = editedNote
+        });
+    }
+
+    [HttpPost("delete")]
+    public async Task<IActionResult> DeleteNote(NotesIdModel notesId)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var deletedNote = await _sender.Send(new DeleteNoteCommand(notesId, userId));
+
+        if (deletedNote == null)
+            return NotFound(new ResponseModel<NoteEntity>
             {
-                return Unauthorized();
-            }
+                Success = false,
+                Message = "Note not Found"
+            });
 
-            int affectedRows = await _notesBL.TrashUnTrashBL(_notesId, UserId);
+        return Ok(new ResponseModel<NoteEntity>
+        {
+            Success = true,
+            Message = "Note Deleted",
+            Data = deletedNote
+        });
+    }
 
-            if (affectedRows == 0) return NotFound(new ResponseModel<NotesIdModel>
+    [HttpPost("archive")]
+    public async Task<IActionResult> ArchUnarchNote(NotesIdModel notesId)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var affectedRows = await _sender.Send(new ArchiveNoteCommand(notesId, userId));
+
+        if (affectedRows == 0)
+            return NotFound(new ResponseModel<NotesIdModel>
             {
                 Success = false,
                 Message = "Note not found",
-                Data = _notesId
+                Data = notesId
             });
 
-            return Ok(new ResponseModel<NotesIdModel>
+        return Ok(new ResponseModel<NotesIdModel>
+        {
+            Success = true,
+            Message = "Note Archived/Unarchived",
+            Data = notesId
+        });
+    }
+
+    [HttpPost("trashing")]
+    public async Task<IActionResult> TrashUnTrash(NotesIdModel notesId)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var affectedRows = await _sender.Send(new TrashNoteCommand(notesId, userId));
+
+        if (affectedRows == 0)
+            return NotFound(new ResponseModel<NotesIdModel>
             {
-                Success = true,
-                Message = "Note Trashed/Untrashed",
-                Data = _notesId
+                Success = false,
+                Message = "Note not found",
+                Data = notesId
             });
-        }
 
-        private bool TryGetUserId(out int UserId)
-		{
-			return int.TryParse(User.FindFirstValue(UserIdClaim), out UserId);
-		}
+        return Ok(new ResponseModel<NotesIdModel>
+        {
+            Success = true,
+            Message = "Note Trashed/Untrashed",
+            Data = notesId
+        });
+    }
 
+    private bool TryGetUserId(out int userId)
+    {
+        return int.TryParse(User.FindFirstValue(UserIdClaim), out userId);
     }
 }
-

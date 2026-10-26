@@ -1,8 +1,11 @@
-﻿using System.Security.Claims;
+﻿using System.Reflection;
+using System.Security.Claims;
 using BuisnessLayer.Interface;
+using BuisnessLayer.Users.Command;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer;
+using MediatR;
 using ModelLayer.Models;
 
 namespace Fundoo1.Controllers;
@@ -11,19 +14,20 @@ namespace Fundoo1.Controllers;
 [Route("api/[controller]")]
 public class FundooController : ControllerBase
 {
-    private IUserBL _userBL;
-
-    public FundooController(IUserBL _userBL)
+    private readonly ISender _sender;
+    public FundooController(ISender sender)
     {
-        this._userBL = _userBL;
+        _sender = sender;
     }
 
     [HttpPost]
     [Route("register")]
-    public async Task<ResponseModel<RegistrationModel>> RegisterUser(RegistrationModel registrationModel)
+    public async Task<ResponseModel<UserResponseModel>> RegisterUser(RegistrationModel registrationModel)
     {
-        RegistrationModel response= await _userBL.RegisterUserBL(registrationModel);
-        ResponseModel<RegistrationModel> model = new ResponseModel<RegistrationModel>();
+        CreateUserCommand command = new CreateUserCommand(registrationModel);
+        UserResponseModel response = await _sender.Send(command);
+
+        ResponseModel<UserResponseModel> model = new ResponseModel<UserResponseModel>();
         model.Data = response;
         model.Success = true;
         model.Message = "User Registered Successfull";
@@ -34,7 +38,8 @@ public class FundooController : ControllerBase
     [Route("login")]
     public async Task<IActionResult> Login(LoginModel model)
     {
-        var result = await _userBL.LoginUserBL(model);
+        LoginCommand command = new LoginCommand(model);
+        var result = await _sender.Send(command);
         var response = new ResponseModel<UserResponseModel>();
 
         if (result == null)
@@ -64,7 +69,7 @@ public class FundooController : ControllerBase
     [HttpPost("ForgotPassword")]
     public async Task<IActionResult> ForgotPasswordAsync(ForgotPasswordRequestModel req)
     {
-        var res = await _userBL.ForgotPasswordAsyncBL(req);
+        var res = await _sender.Send(new ForgotPasswordCommand(req));
 
         return Ok(res);
     }
@@ -73,7 +78,7 @@ public class FundooController : ControllerBase
     [Route("ResetPassword")]
     public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequestModel req)
     {
-        var res = await _userBL.ResetPasswordAsyncBL(req);
+        var res = await _sender.Send(new ResetPasswordCommand(req));
         if (res.Success)
         {
             return Ok(res);

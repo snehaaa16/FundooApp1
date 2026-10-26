@@ -1,16 +1,14 @@
 ﻿using System;
 using ModelLayer;
 using ModelLayer.Models;
+using RepositoryLayer.Entity;
 
 namespace BuisnessLayer.Interface
 {
 	public interface IUserBL
 	{
-        public Task<RegistrationModel> RegisterUserBL(RegistrationModel registrationModel);
-        public Task<UserResponseModel> LoginUserBL(LoginModel model);
-        public Task<ForgotPasswordResponseModel> ForgotPasswordAsyncBL(ForgotPasswordRequestModel req);
-        public PasswordResetTokenModel GenerateToken(string email);
-        public Task<ResetPasswordResponseModel> ResetPasswordAsyncBL(ResetPasswordRequestModel req);
+        public Task<UserEntity> RegisterUserBL(UserEntity entity);
+        public Task<UserEntity?> LoginUserBL(LoginModel loginUser);
     }
 }
 

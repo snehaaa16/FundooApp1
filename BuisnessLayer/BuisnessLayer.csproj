@@ -10,10 +10,24 @@
   <ItemGroup>
     <None Remove="Interface\" />
     <None Remove="Service\" />
+    <None Remove="Notes\" />
+    <None Remove="Notes\Command\" />
+    <None Remove="Notes\Queries\" />
+    <None Remove="Users\" />
+    <None Remove="Users\Command\" />
+    <None Remove="Users\Queries\" />
+    <None Remove="Notes\Handler\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interface\" />
     <Folder Include="Service\" />
+    <Folder Include="Notes\" />
+    <Folder Include="Notes\Command\" />
+    <Folder Include="Notes\Queries\" />
+    <Folder Include="Users\" />
+    <Folder Include="Users\Command\" />
+    <Folder Include="Users\Queries\" />
+    <Folder Include="Notes\Handler\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RepositoryLayer\RepositoryLayer.csproj" />
@@ -23,5 +37,6 @@
   <ItemGroup>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.7.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+    <PackageReference Include="MediatR" Version="7.0.0" />
   </ItemGroup>
 </Project>

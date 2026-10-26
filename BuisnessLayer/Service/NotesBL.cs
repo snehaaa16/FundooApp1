@@ -1,4 +1,5 @@
 ﻿using BuisnessLayer.Interface;
+using BuisnessLayer.Notes.Command;
 using ModelLayer.Models;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interface;
@@ -6,37 +7,23 @@ using RepositoryLayer.Service;
 
 namespace BuisnessLayer.Service
 {
-	public class NotesBL: INotesBL
+    public class NotesBL : INotesBL
     {
-		private INotesRL _notesRL;
-		public NotesBL(INotesRL _notesRL)
-		{
-			this._notesRL = _notesRL;
-		}
+        private readonly INotesRL _notesRL;
 
-		public async Task<NoteEntity> AddNoteBL(NoteModel note)
-		{
-			return await _notesRL.AddNoteRL(note);
-		}
-
-        public async Task<NoteEntity?> FindNoteByIdBL(NotesIdModel _notesId, int userId)
+        public NotesBL(INotesRL notesRL)
         {
-            return await _notesRL.FindNoteByIdRL(_notesId, userId);
+            _notesRL = notesRL;
         }
 
-        public async Task<NoteEntity?> DeleteNoteBL(NotesIdModel _notesId, int userId)
+        public async Task<NoteEntity> AddNoteBL(NoteEntity note)
         {
-            return await _notesRL.DeleteNoteRL(_notesId,userId);
+            return await _notesRL.AddNoteRL(note);
         }
 
-        public async Task<int> ArchUnarchNoteBL(NotesIdModel _notesId,int userId)
-		{
-			return await _notesRL.ArchUnarchNoteRL(_notesId,userId);
-        }
-
-        public async Task<int> TrashUnTrashBL(NotesIdModel _notesId, int userId)
+        public async Task<NoteEntity?> FindNoteByIdBL(NotesIdModel notesId, int userId)
         {
-            return await _notesRL.TrashUnTrashRL(_notesId, userId);
+            return await _notesRL.FindNoteByIdRL(notesId, userId);
         }
 
         public async Task<List<NoteEntity>> ViewAllNotesBL(int userId)
@@ -44,12 +31,25 @@ namespace BuisnessLayer.Service
             return await _notesRL.ViewAllNotesRL(userId);
         }
 
-        public async Task<NoteEntity> EditNoteBL(EditNoteModel editNoteModel,int userId)
+        public async Task<NoteEntity?> EditNoteBL(NoteEntity note, int userId)
         {
-            return await _notesRL.EditNoteRL(editNoteModel,userId);
+            return await _notesRL.EditNoteRL(note, userId);
         }
 
+        public async Task<NoteEntity?> DeleteNoteBL(NotesIdModel notesId, int userId)
+        {
+            return await _notesRL.DeleteNoteRL(notesId, userId);
+        }
 
+        public async Task<int> ArchUnarchNoteBL(NotesIdModel notesId, int userId)
+        {
+            return await _notesRL.ArchUnarchNoteRL(notesId, userId);
+        }
+
+        public async Task<int> TrashUnTrashBL(NotesIdModel notesId, int userId)
+        {
+            return await _notesRL.TrashUnTrashRL(notesId, userId);
+        }
     }
 }
 

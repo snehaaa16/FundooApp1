@@ -11,7 +11,6 @@ namespace RepositoryLayer.Context
 		}
 
         public DbSet<UserEntity> Users { get; set; }
-		public DbSet<PasswordResetTokenEntity> Tokens { get; set; }
 		public DbSet<NoteEntity> Notes { get; set; }
     }
 }
